@@ -1,0 +1,309 @@
+openapi: 3.0.1
+info:
+  title: UFO
+  description: ufo-api
+  version: 1.0.0
+servers:
+- url: http://localhost:3000/v1
+- url: https://localhost:3000/v1
+tags:
+- name: Notify
+  description: Notify API
+paths:
+ /notify/{type}:
+    post:
+      tags:
+        - Notify
+      summary: Вызвать оповещение пользователя
+      operationId: call_notification
+      parameters:
+        - name: type
+          in: path
+          description: Тип оповещения
+          required: true
+          schema:
+            type: string
+            enum:
+            - sms
+            - push
+            - email
+            - voice
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/notifyResponse'
+        '400':
+          description: Bad request
+        '404':
+          description: User not found
+        '500':
+          description: Internal server error
+      requestBody:
+         $ref: '#/components/requestBodies/sendNotificationBody'
+components:
+  schemas:
+    registrationResponse:
+      type: object
+      properties:
+        timer:
+          type: integer
+          example: 600
+    balanceResponse:
+      type: object
+      properties:
+        type:
+          type: string
+        balance:
+          type: integer
+        credit:
+          type: integer
+    MessagesResponse:
+      type: object
+      properties:
+        clientId:
+          type: string
+        smscId:
+          type: integer
+        status:
+          type: string
+        msgCost:
+          type: integer
+        smsCount:
+          type: integer
+    iqSmsResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "ok"
+        messages:
+          type: array
+          items: 
+            $ref: '#/components/schemas/MessagesResponse'
+        balance:
+          type: array
+          items: 
+            $ref: '#/components/schemas/balanceResponse'
+            
+    MessagesRequest:
+      type: object
+      properties:
+        phone:
+          type: string
+        sender:
+          type: string
+        clientId:
+          type: string
+        text:
+          type: string
+  
+      
+      
+    iqSmsBodySchema:
+      type: object
+      properties:
+        showBillingDetails:
+          type: string
+          example: "false"
+        login:
+          type: string
+          example: "21312s123"
+        password:
+          type: string
+          example: "21312s123"
+        messages:
+          type: array
+          items: 
+            $ref: '#/components/schemas/MessagesRequest'
+            
+    notifyResponse:
+      type: object
+      properties:
+        status:
+          type: boolean
+          example: true
+        details:
+          type: string
+          example: "Notification success"
+        timestamp:
+          type: string
+          example: "1649886860"
+    sendNotificationBodySchema:
+      type: object
+      properties:
+        user_endpoint:
+          type: string
+          example: "+7999999991"
+        message:
+          type: string
+          example: "Hello World"
+    subscribeBodySchema:
+      type: object
+      required: 
+        - email
+      properties:
+        email:
+          type: string
+    verifyResponse:
+      type: object
+      properties:
+        phone_number:
+          type: string
+    patchPhoneResponse:
+      type: object
+      properties:
+        phone_number:
+          type: string
+          
+    loginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        verified:
+          type: boolean
+        user:
+          $ref: '#/components/schemas/User'
+    avatars:
+      type: object
+      properties:
+        filename:
+          type: string
+        active:
+          type: boolean
+    Extra:
+      type: object
+      properties:
+        subscription:
+          type: array
+          items:
+            type: string
+        additional_phones:
+          type: array
+          items:
+            type: string
+        additional_email:
+          type: array
+          items: 
+            type: string
+    Notifications:
+      type: object
+      properties:
+        sms:
+            type: boolean
+        gsm:
+            type: boolean
+        push:
+             type: boolean
+        email:
+             type: boolean
+    User:
+      type: object
+      properties:
+        phone_number:
+            type: string
+            example: '+791234567891'
+        name:
+            type: string
+            example: 'Богдан'
+        email:
+            type: string
+            example: 'hello@hello.ru'
+    ResetPasswordSchema:
+      type: object
+      required: 
+        - phone
+      properties:
+        phone:         
+          type: string
+    UserVerifySchema:
+      type: object
+      required: 
+        - User_token
+        - code
+      properties:
+        user_token:         
+          type: string
+        code:
+          type: string
+    PhonePatchSchema:
+     type: object
+     required: 
+      - User_token
+      - mode
+      - new_user_phone
+      - code
+     properties:
+      user_token:         
+        type: string
+      code:
+        type: string
+      new_user_phone:
+        type: string
+      mode:
+        type: string
+    UserLogin:
+     type: object
+     required: 
+      - phone
+      - password
+      - token
+     properties:
+      phone:         
+        type: string
+      password:
+        type: string
+      token:
+        type: string
+  requestBodies:
+    iqSmsBody:
+      content:
+        application/json:
+            schema:
+              $ref: '#/components/schemas/iqSmsBodySchema'
+    sendNotificationBody:
+      content:
+        application/json:
+            schema:
+              $ref: '#/components/schemas/sendNotificationBodySchema'
+
+    SubscribeBody:
+      content:
+        application/json:
+            schema:
+              $ref: '#/components/schemas/subscribeBodySchema'
+    NewPhonePatch:
+      content:
+        application/json:
+            schema:
+              $ref: '#/components/schemas/PhonePatchSchema'
+    UserVerify:
+      content:
+        application/json:
+            schema:
+              $ref: '#/components/schemas/UserVerifySchema'
+    ResetPasswordBody:
+      content:
+        application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordSchema'
+    User:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
+
+    UserLogin:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserLogin'
+  securitySchemes:
+    JWT:
+      type: apiKey
+      description: ""
+      name: Authorization
+      in: header
