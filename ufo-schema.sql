@@ -144,3 +144,14 @@ CREATE TABLE ufo.user.confirmations (
   
   
 
+-- EMAIL TEMPLATE TABLE
+DROP 
+  TABLEIF EXISTS ufo.content.email;
+CREATE TABLE ufo.content.email (
+  id SERIAL PRIMARY KEY, 
+  type SMALLINT NOT NULL, 
+  description VARCHAR (255) NOT NULL, 
+  template VARCHAR (255) NOT NULL, 
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

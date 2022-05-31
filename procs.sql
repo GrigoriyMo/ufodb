@@ -26,3 +26,13 @@ LANGUAGE SQL AS $$
 INSERT INTO "user"."confirmations" ("user_id" , "email_hash", "type", "status", "contact") 
 values (user_id, code, 1,0, contact); 
 $$;
+
+CREATE PROCEDURE "user".validate_sms_confirmation(confirmation_id integer) 
+LANGUAGE SQL AS $$
+UPDATE  "user"."confirmations" SET status = 1 where id = confirmation_id; 
+$$;
+
+CREATE PROCEDURE "user".validate_email_confirmation(confirmation_id integer) 
+LANGUAGE SQL AS $$
+UPDATE  "user"."confirmations" SET status = 1 where id = confirmation_id; 
+$$;
